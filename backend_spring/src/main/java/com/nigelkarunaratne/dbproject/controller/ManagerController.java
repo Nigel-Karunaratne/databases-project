@@ -49,6 +49,13 @@ public class ManagerController {
         }
     }
 
+    @PutMapping("/{userId}")
+    public ResponseEntity<Manager> updateManagerProfile(@PathVariable Long userId, @RequestBody Manager managerDetails) {
+        return managerService.updateManagerProfile(userId, managerDetails)
+            .map(ResponseEntity::ok) // Returns 200 OK with the updated Manager body
+            .orElseGet(() -> ResponseEntity.notFound().build()); // Returns 404 Not Found if the ID doesn't exist
+    }
+
     // DELETE /api/managers/{userId}
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteManagerProfile(@PathVariable Long userId) {
