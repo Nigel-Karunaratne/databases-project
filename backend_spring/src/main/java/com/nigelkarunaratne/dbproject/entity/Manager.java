@@ -1,6 +1,10 @@
 package com.nigelkarunaratne.dbproject.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
@@ -10,7 +14,7 @@ public class Manager {
 
     @Id
     @Column(name = "user_id")
-    private Long userID;
+    private Integer userID;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId // Indicates that the primary key is mapped from the User entity
@@ -18,27 +22,32 @@ public class Manager {
     @JsonBackReference
     private User user;
 
-    @Column(nullable = false)
-    private String expertise_area;
+    @Column(name = "expertise_area", nullable = false)
+    private String expertiseArea;
 
-    @Column(nullable = false)
-    private Integer exp_years;
+    @Column(name = "exp_years", nullable = false)
+    private Integer experienceYears;
+
+    // for project foreign key
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Project> projects = new HashSet<>();
 
     public Manager() {
     }
 
-    public Manager(String expertise_area, Integer exp_years) {
-        this.expertise_area = expertise_area;
-        this.exp_years = exp_years;
+    public Manager(String expertiseArea, Integer experienceYears) {
+        this.expertiseArea = expertiseArea;
+        this.experienceYears = experienceYears;
     }
 
     // GETTER/SETTER
 
-    public Long getUserID() {
+    public Integer getUserID() {
         return userID;
     }
 
-    public void setUserID(Long userID) {
+    public void setUserID(Integer userID) {
         this.userID = userID;
     }
 
@@ -54,19 +63,28 @@ public class Manager {
         }
     }
 
-    public String getExpertise_area() {
-        return expertise_area;
+    public String getExpertiseArea() {
+        return expertiseArea;
     }
 
-    public void setExpertise_area(String expertise_area) {
-        this.expertise_area = expertise_area;
+    public void setExpertiseArea(String expertiseArea) {
+        this.expertiseArea = expertiseArea;
     }
 
-    public Integer getExp_years() {
-        return exp_years;
+    public Integer getExperienceYears() {
+        return experienceYears;
     }
 
-    public void setExp_years(Integer exp_years) {
-        this.exp_years = exp_years;
+    public void setExperienceYears(Integer experienceYears) {
+        this.experienceYears = experienceYears;
+    }
+
+    // foreign key
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 }

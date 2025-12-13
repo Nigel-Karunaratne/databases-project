@@ -1,5 +1,8 @@
 package com.nigelkarunaratne.dbproject.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -11,7 +14,7 @@ public class User {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userID;
+    private Integer userID;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -30,6 +33,11 @@ public class User {
     @JsonManagedReference
     private Manager managerProfile;
 
+    // For Task using foreign key
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("user-tasks")
+    private Set<Task> assignedTasks = new HashSet<>();
+
     public User() {
     }
 
@@ -42,11 +50,11 @@ public class User {
 
     // GETTERS/SETTERS //
 
-    public Long getUserID() {
+    public Integer getUserID() {
         return userID;
     }
 
-    public void setUserID(Long userID) {
+    public void setUserID(Integer userID) {
         this.userID = userID;
     }
 
@@ -93,5 +101,14 @@ public class User {
         if (managerProfile != null) {
             managerProfile.setUser(this);
         }
+    }
+    
+    // for task
+    public Set<Task> getAssignedTasks() {
+        return assignedTasks;
+    }
+
+    public void setAssignedTasks(Set<Task> assignedTasks) {
+        this.assignedTasks = assignedTasks;
     }
 }

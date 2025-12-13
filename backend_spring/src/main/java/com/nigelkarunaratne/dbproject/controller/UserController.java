@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/users") // Base URL for all endpoints in this controller
 public class UserController {
 
@@ -19,15 +20,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    // --- GET (Read) Operations ---
-
-    // GET /api/users
+    // GET /api/users (OPERATION: Read)
     @GetMapping
     public List<User> getAllUsers() {
         return userService.findAllUsers();
     }
 
-    // GET /api/users/{id}
+    // GET /api/users/{id} (OPERATION: Read)
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.findUserById(id)
@@ -35,28 +34,22 @@ public class UserController {
             .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return 404 Not Found
     }
 
-    // --- POST (Create) Operation ---
-
-    // POST /api/users
+    // POST /api/users (OPERATION: Create)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // Returns 201 Created
     public User createUser(@RequestBody User user) {
         return userService.saveUser(user);
     }
 
-    // --- PUT (Update) Operation ---
-
-    // PUT /api/users/{id}
+    // PUT /api/users/{id} (OPERATION: Update)
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
         return userService.updateUser(id, userDetails)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-    // --- DELETE Operation ---
-
-    // DELETE /api/users/{id}
+    
+    // DELETE /api/users/{id} (OPERATION: Delete)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         boolean deleted = userService.deleteUser(id);

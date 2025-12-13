@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/managers")
 public class ManagerController {
 
@@ -34,7 +35,7 @@ public class ManagerController {
     }
 
     // POST /api/managers/{userId}
-    // Note: We use the user's ID in the path to create their profile
+    // Use the user's ID in the path to create their profile
     @PostMapping("/{userId}")
     public ResponseEntity<Manager> createManagerProfile(@PathVariable Long userId, @RequestBody Manager managerDetails) {
         Optional<Manager> createdManager = managerService.createManagerProfile(userId, managerDetails);
