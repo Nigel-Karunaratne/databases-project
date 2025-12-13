@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const API_BASE_URL = 'http://localhost:8080/api/projects'; 
 
@@ -53,7 +54,7 @@ function ProjectTable() {
         <div className="alert alert-danger" role="alert">
           Error loading data: **{error}**
         </div>
-        <button className="btn btn-secondary" onClick={fetchUsers}>
+        <button className="btn btn-secondary" onClick={fetchData}>
             Try Again
         </button>
       </div>
@@ -71,6 +72,7 @@ function ProjectTable() {
           <tr>
             <th>Project ID</th>
             <th>Name</th>
+            <th>Manager ID</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -79,9 +81,9 @@ function ProjectTable() {
             <tr key={data.projectID}>
               <td>{data.projectID}</td>
               <td>{data.projectName}</td>
+              <td>{data.managerUserID}</td>
               <td>
-                {/* Placeholder buttons for future operations */}
-                <button className="btn btn-sm btn-info me-2">Edit</button>
+                <Link to={`/projects/edit/${data.projectID}`} className="btn btn-sm btn-info me-2">Edit</Link>
                 <button className="btn btn-sm btn-danger">Delete</button>
               </td>
             </tr>

@@ -54,7 +54,7 @@ function UserTable() {
         <div className="alert alert-danger" role="alert">
           Error loading data: **{error}**
         </div>
-        <button className="btn btn-secondary" onClick={fetchUsers}>
+        <button className="btn btn-secondary" onClick={fetchData}>
             Try Again
         </button>
       </div>

@@ -65,7 +65,7 @@ function UserEditPage() {
 
   return (
     <div className="mt-5 p-4 border rounded shadow-sm">
-      <h2 className="mb-4">Edit User ID: {id}</h2>
+      <h2 className="mb-4">Edit User (ID: {id})</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>First Name</Form.Label>

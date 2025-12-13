@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const API_BASE_URL = 'http://localhost:8080/api/tasks'; 
 
@@ -53,7 +54,7 @@ function TaskTable() {
         <div className="alert alert-danger" role="alert">
           Error loading data: **{error}**
         </div>
-        <button className="btn btn-secondary" onClick={fetchUsers}>
+        <button className="btn btn-secondary" onClick={fetchData}>
             Try Again
         </button>
       </div>
