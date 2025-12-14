@@ -34,6 +34,11 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
+    public List<Task> findTasksByUserId(Integer userId) {
+        // Use the custom finder method from the repository
+        return taskRepository.findByUserUserID(userId);
+    }
+
     // --- CREATE OPERATION ---
 
     @Transactional

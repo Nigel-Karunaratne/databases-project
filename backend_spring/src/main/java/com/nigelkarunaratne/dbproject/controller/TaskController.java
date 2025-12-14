@@ -89,6 +89,20 @@ public class TaskController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Task>> getTasksByUserId(@PathVariable Integer userId) {
+        
+        List<Task> tasks = taskService.findTasksByUserId(userId);
+        
+        if (tasks.isEmpty()) {
+            // Return 404 if no tasks are found for that user ID
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Return 200 OK with the list of tasks
+        return ResponseEntity.ok(tasks);
+    }
     
     // --- POST OPERATION ---
 
