@@ -108,4 +108,4 @@ INSERT INTO Tasks VALUES (DEFAULT, 6, 5, "Assist Mockup Creation", "Help manager
 INSERT INTO Tasks VALUES (DEFAULT, 7, 6, "Plan Space", "Evaluate possible designs for the new office space", 5, "2026-7-12");
 INSERT INTO Tasks VALUES (DEFAULT, 7, 2, "Assist with Space Planning", "Assist manager with evaluating possible designs for the new office space", 6, "2026-7-12");
 INSERT INTO Tasks VALUES (DEFAULT, 7, 6, "Take Inventory", "Identify existing furnishings that can be moved to the new office", 3, "2026-7-10");
-INSERT INTO Tasks VALUES (DEFAULT, 7, 4, "Assist with Take Inventory", "Assist manager with idenfitying existing furnishings that can be moved to the new office", 2, "2026-7-10");
+INSERT INTO Tasks VALUES (DEFAULT, 7, 4, "Assist with Take Inventory", "Assist manager with identifying existing furnishings that can be moved to the new office", 2, "2026-7-10");
