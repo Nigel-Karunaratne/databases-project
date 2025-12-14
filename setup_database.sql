@@ -24,6 +24,7 @@ CREATE TABLE Managers (
     user_id INT NOT NULL,
     expertise_area varchar(255) NOT NULL,
     exp_years INT NOT NULL,
+    PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -68,7 +69,7 @@ INSERT INTO Users VALUES
 
 INSERT INTO Managers VALUES
 (3, "User Experience", 5),
-(6, "Art", 2),
+(6, "Art and Design", 2),
 (9, "Frontend Development", 3),
 (12, "Systems Engineering", 10);
 
@@ -76,7 +77,10 @@ INSERT INTO Projects VALUES
 (DEFAULT, "New App Theme", 3), -- 1
 (DEFAULT, "Concept Artwork for Clients", 6), -- 2
 (DEFAULT, "New Website", 9), -- 3
-(DEFAULT, "New Rendering Pipeline Development", 12); -- 4
+(DEFAULT, "New Rendering Pipeline Development", 12), -- 4
+(DEFAULT, "Update Physics Engine", 12), -- 5
+(DEFAULT, "New App Layout", 3), -- 6
+(DEFAULT, "Office Renovations", 6); -- 7
 
 INSERT INTO Tasks VALUES (DEFAULT, 1, 1, "Research Trends", "Research industry tends to understand design languages", 0, "2026-5-31");
 INSERT INTO Tasks VALUES (DEFAULT, 1, 2, "Create Mockups", "Create possible mockups of system", 2, "2026-06-24");
@@ -93,3 +97,15 @@ INSERT INTO Tasks VALUES (DEFAULT, 3, 9, "Review Mockup", "Using the created moc
 
 INSERT INTO Tasks VALUES (DEFAULT, 4, 10, "Conduct Research", "Review research and determine possible improvements", 0, "2026-4-30");
 INSERT INTO Tasks VALUES (DEFAULT, 4, 12, "Conduct Research", "Review research and determine possible improvements", 0, "2026-4-30");
+
+INSERT INTO Tasks VALUES (DEFAULT, 5, 12, "Evaluate System", "Evaluate the current system to determine strengths and weaknesses", 0, "2026-5-30");
+INSERT INTO Tasks VALUES (DEFAULT, 5, 10, "Review Survey", "Review most recent hardware survey to identify median machines", 3, "2026-6-24");
+INSERT INTO Tasks VALUES (DEFAULT, 5, 10, "Update GUI", "Update the simulation GUI to be more responsive", 1, "2026-7-14");
+
+INSERT INTO Tasks VALUES (DEFAULT, 6, 3, "Create Mockups", "Create mockups of new app designs", 0, "2026-5-22");
+INSERT INTO Tasks VALUES (DEFAULT, 6, 5, "Assist Mockup Creation", "Help manager create mockups of new app designs", 1, "2026-5-22");
+
+INSERT INTO Tasks VALUES (DEFAULT, 7, 6, "Plan Space", "Evaluate possible designs for the new office space", 5, "2026-7-12");
+INSERT INTO Tasks VALUES (DEFAULT, 7, 2, "Assist with Space Planning", "Assist manager with evaluating possible designs for the new office space", 6, "2026-7-12");
+INSERT INTO Tasks VALUES (DEFAULT, 7, 6, "Take Inventory", "Identify existing furnishings that can be moved to the new office", 3, "2026-7-10");
+INSERT INTO Tasks VALUES (DEFAULT, 7, 4, "Assist with Take Inventory", "Assist manager with idenfitying existing furnishings that can be moved to the new office", 2, "2026-7-10");
