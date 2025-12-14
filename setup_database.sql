@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS Users;
 -- Users(u_id, first_name, last_name, email, addr)
 -- Managers(u_id, expertise_area, exp_years)
 -- Projects(p_id, project_name, manager_uid)
--- Tasks(task_id, project_id, title, descript, priority_lvl, due_date)
+-- Tasks(task_id, project_id, user_id, title, descript, priority_lvl, due_date)
 
 CREATE TABLE Users (
     user_id INT NOT NULL AUTO_INCREMENT,
