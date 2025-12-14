@@ -29,7 +29,8 @@ public class Manager {
     private Integer experienceYears;
 
     // for project foreign key
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Project> projects = new HashSet<>();
 
@@ -58,9 +59,9 @@ public class Manager {
     // When setting the User, we also link the IDs
     public void setUser(User user) {
         this.user = user;
-        if (user != null) {
-            this.userID = user.getUserID();
-        }
+        // if (user != null) {
+        //     this.userID = user.getUserID();
+        // }
     }
 
     public String getExpertiseArea() {
