@@ -16,7 +16,7 @@ CREATE TABLE Users (
     first_name varchar(255) NOT NULL,
     last_name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
-    addr varchar(255),
+    addr varchar(255) NOT NULL,
     PRIMARY KEY(user_id)
 );
 
@@ -30,24 +30,24 @@ CREATE TABLE Managers (
 CREATE TABLE Projects (
     project_id INT NOT NULL AUTO_INCREMENT,
     project_name varchar(255) NOT NULL,
-    manager_uid INT,
+    manager_uid INT NOT NULL,
 
     PRIMARY KEY (project_id),
-    FOREIGN KEY (manager_uid) REFERENCES Managers(user_id) ON UPDATE CASCADE ON DELETE SET NULL
+    FOREIGN KEY (manager_uid) REFERENCES Managers(user_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE Tasks (
     task_id INT NOT NULL AUTO_INCREMENT,
     project_id INT NOT NULL,
-    user_id INT,
+    user_id INT NOT NULL,
     title varchar(255) NOT NULL,
     descript varchar(255) NOT NULL,
     priority_lvl INT NOT NULL,
-    due_date DATE,
+    due_date DATE NOT NULL,
     
     PRIMARY KEY (task_id),
     FOREIGN KEY (project_id) REFERENCES Projects(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON UPDATE CASCADE ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON UPDATE CASCADE
 );
 
 --
@@ -76,7 +76,7 @@ INSERT INTO Projects VALUES
 (DEFAULT, "New App Theme", 3), -- 1
 (DEFAULT, "Concept Artwork for Clients", 6), -- 2
 (DEFAULT, "New Website", 9), -- 3
-(DEFAULT, "New Rendering Pipeline Development", NULL); -- 4
+(DEFAULT, "New Rendering Pipeline Development", 12); -- 4
 
 INSERT INTO Tasks VALUES (DEFAULT, 1, 1, "Research Trends", "Research industry tends to understand design languages", 0, "2026-5-31");
 INSERT INTO Tasks VALUES (DEFAULT, 1, 2, "Create Mockups", "Create possible mockups of system", 2, "2026-06-24");
