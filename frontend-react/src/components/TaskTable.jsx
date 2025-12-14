@@ -130,6 +130,7 @@ function TaskTable() {
       <button className="btn btn-success mt-3" onClick={fetchData}>
         Refresh Data
       </button>
+      <Link to={`/tasks/create`} className="btn btn-success mt-3">Create New Task</Link>
     </div>
   );
 }

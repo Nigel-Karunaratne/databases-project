@@ -12,6 +12,7 @@ import TaskEditPage from './pages/TaskEditPage';
 import UserCreatePage from './pages/UserCreatePage';
 import ManagerCreatePage from './pages/ManagerCreatePage';
 import ProjectCreatePage from './pages/ProjectCreatePage';
+import TaskCreatePage from './pages/TaskCreatePage';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -35,7 +36,7 @@ function App() {
           <Route path="/users/create/" element={<UserCreatePage />} />
           <Route path="/managers/create/" element={<ManagerCreatePage />} />
           <Route path="/projects/create/" element={<ProjectCreatePage />} />
-          {/* <Route path="/tasks/create/" element={<TaskCreatePage />} /> */}
+          <Route path="/tasks/create/" element={<TaskCreatePage />} />
         </Routes>
       </div>
     </Router>
