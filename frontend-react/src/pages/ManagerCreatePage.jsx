@@ -21,12 +21,27 @@ function ManagerCreatePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const dataToSend = { ...formData };
+    dataToSend.userID = parseInt(dataToSend.userID);
+    if (isNaN(dataToSend.userID)) {
+      alert("User ID needs to be an integer");
+      return;
+    }
+    dataToSend.experienceYears = parseInt(dataToSend.experienceYears);
+    if (isNaN(dataToSend.experienceYears)) {
+      alert("Years of Experience needs to be an integer");
+      return;
+    }
+
+    console.log(JSON.stringify(dataToSend));
     setSubmitting(true);
+
     try {
       const response = await fetch(`${API_URL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {

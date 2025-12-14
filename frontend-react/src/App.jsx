@@ -14,6 +14,8 @@ import ManagerCreatePage from './pages/ManagerCreatePage';
 import ProjectCreatePage from './pages/ProjectCreatePage';
 import TaskCreatePage from './pages/TaskCreatePage';
 
+import TaskSearchPage from './pages/TaskSearchPage';
+
 function App() {
   const [count, setCount] = useState(0)
 
@@ -23,7 +25,8 @@ function App() {
         <h1 className='text-center mb-5'>Task Management System (Admin View)</h1>
 
         <nav className='nav nav-tabs justify-content-center mb-4'>
-
+          <Link className='nav-link' to="/">Dashboard</Link>
+          <Link className='nav-link' to="/tasks/search">Find Tasks for User</Link>
         </nav>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -37,6 +40,8 @@ function App() {
           <Route path="/managers/create/" element={<ManagerCreatePage />} />
           <Route path="/projects/create/" element={<ProjectCreatePage />} />
           <Route path="/tasks/create/" element={<TaskCreatePage />} />
+
+          <Route path="/tasks/search/" element={<TaskSearchPage />} />
         </Routes>
       </div>
     </Router>
