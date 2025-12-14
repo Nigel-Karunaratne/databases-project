@@ -120,6 +120,7 @@ function ManagerTable() {
       <button className="btn btn-success mt-3" onClick={fetchData}>
         Refresh Data
       </button>
+      <Link to={`/managers/create`} className="btn btn-success mt-3">Create New Manager</Link>
     </div>
   );
 }

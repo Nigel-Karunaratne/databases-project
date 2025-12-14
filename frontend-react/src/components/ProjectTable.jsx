@@ -119,6 +119,7 @@ function ProjectTable() {
       <button className="btn btn-success mt-3" onClick={fetchData}>
         Refresh Data
       </button>
+      <Link to={`/projects/create`} className="btn btn-success mt-3">Create New Project</Link>
     </div>
   );
 }

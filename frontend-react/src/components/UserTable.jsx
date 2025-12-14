@@ -127,6 +127,7 @@ function UserTable() {
       <button className="btn btn-success mt-3" onClick={fetchData}>
         Refresh Data
       </button>
+      <Link to={`/users/create`} className="btn btn-success mt-3">Create New User</Link>
     </div>
   );
 }

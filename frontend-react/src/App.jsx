@@ -9,6 +9,10 @@ import ManagerEditPage from './pages/ManagerEditPage';
 import ProjectEditPage from './pages/ProjectEditPage';
 import TaskEditPage from './pages/TaskEditPage';
 
+import UserCreatePage from './pages/UserCreatePage';
+import ManagerCreatePage from './pages/ManagerCreatePage';
+import ProjectCreatePage from './pages/ProjectCreatePage';
+
 function App() {
   const [count, setCount] = useState(0)
 
@@ -27,6 +31,11 @@ function App() {
           <Route path="/managers/edit/:id" element={<ManagerEditPage />} />
           <Route path="/projects/edit/:id" element={<ProjectEditPage />} />
           <Route path="/tasks/edit/:id" element={<TaskEditPage />} />
+
+          <Route path="/users/create/" element={<UserCreatePage />} />
+          <Route path="/managers/create/" element={<ManagerCreatePage />} />
+          <Route path="/projects/create/" element={<ProjectCreatePage />} />
+          {/* <Route path="/tasks/create/" element={<TaskCreatePage />} /> */}
         </Routes>
       </div>
     </Router>
