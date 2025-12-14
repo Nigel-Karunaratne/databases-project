@@ -34,6 +34,33 @@ function TaskTable() {
     fetchData();
   }, []); // Empty dependency array ensures this runs only once
 
+  const handleDelete = async (taskID, taskTitle) => {
+    // 1. Confirmation Step
+    if (!window.confirm(`Are you sure you want to delete task: ${taskTitle} (ID: ${taskID})?`)) {
+      return; // Stop if the user cancels
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/${taskID}`, {
+        method: 'DELETE', // 2. Specify the DELETE method
+      });
+
+      if (response.status === 204 || response.ok) { 
+        console.log(`task ${taskID} deleted successfully.`);
+        // Optional: Show a success message to the user (e.g., a Bootstrap Toast)
+
+        window.location.reload();
+      } else {
+        // Handle API errors (e.g., if the user doesn't exist)
+        throw new Error(`Failed to delete task: HTTP status ${response.status}`);
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(`Deletion failed: ${err.message}`);
+    }
+
+  };
+
   /* --- RENDERING --- */
 
   if (loading) {
@@ -72,6 +99,7 @@ function TaskTable() {
           <tr>
             <th>Task ID</th>
             <th>Title</th>
+            <th>Project</th>
             <th>Description</th>
             <th>Assigned User ID</th>
             <th>Priority Level</th>
@@ -84,14 +112,14 @@ function TaskTable() {
             <tr key={data.taskID}>
               <td>{data.taskID}</td>
               <td>{data.title}</td>
+              <td>{data.projectID}</td>
               <td>{data.description}</td>
               <td>{data.assignedUserID}</td>
               <td>{data.priority}</td>
               <td>{data.dueDate}</td>
               <td>
-                {/* Placeholder buttons for future operations */}
-                <button className="btn btn-sm btn-info me-2">Edit</button>
-                <button className="btn btn-sm btn-danger">Delete</button>
+                <Link to={`/tasks/edit/${data.taskID}`} className="btn btn-sm btn-info me-2">Edit</Link>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(data.taskID, data.title)}>Delete</button>
               </td>
             </tr>
           ))}

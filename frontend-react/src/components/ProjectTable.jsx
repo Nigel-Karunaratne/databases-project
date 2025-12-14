@@ -34,6 +34,30 @@ function ProjectTable() {
     fetchData();
   }, []); // Empty dependency array ensures this runs only once
 
+  const handleDelete = async (projectID, projectName) => {
+    if (!window.confirm(`Are you sure you want to delete project: ${projectName} (ID: ${projectID})?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/${projectID}`, {
+        method: 'DELETE',
+      });
+
+      if (response.status === 204 || response.ok) { 
+        console.log(`Project ${projectID} deleted successfully.`);
+        window.location.reload();
+      } else {
+        // Handle API errors
+        throw new Error(`Failed to delete project: HTTP status ${response.status}`);
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(`Deletion failed: ${err.message}`);
+    }
+
+  };
+
   /* --- RENDERING --- */
 
   if (loading) {
@@ -84,7 +108,7 @@ function ProjectTable() {
               <td>{data.managerUserID}</td>
               <td>
                 <Link to={`/projects/edit/${data.projectID}`} className="btn btn-sm btn-info me-2">Edit</Link>
-                <button className="btn btn-sm btn-danger">Delete</button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(data.projectID, data.projectName)}>Delete</button>
               </td>
             </tr>
           ))}

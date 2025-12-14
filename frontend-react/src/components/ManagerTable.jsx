@@ -34,6 +34,31 @@ function ManagerTable() {
     fetchData();
   }, []); // Empty dependency array ensures this runs only once
 
+  const handleDelete = async (managerId) => {
+    if (!window.confirm(`Are you sure you want to delete manager ID: ${managerId}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/${managerId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.status === 204 || response.ok) { 
+        console.log(`Manager ${managerId} deleted successfully.`);
+        //reload window
+        window.location.reload();
+      } else {
+        // Handle API errors
+        throw new Error(`Failed to delete manager: HTTP status ${response.status}`);
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(`Deletion failed: ${err.message}`);
+    }
+
+  };
+
   /* --- RENDERING --- */
 
   if (loading) {
@@ -84,7 +109,7 @@ function ManagerTable() {
               <td>{data.experienceYears}</td>
               <td>
                 <Link to={`/managers/edit/${data.userID}`} className="btn btn-sm btn-info me-2">Edit</Link>
-                <button className="btn btn-sm btn-danger">Delete</button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(data.userID)}>Delete</button>
               </td>
             </tr>
           ))}

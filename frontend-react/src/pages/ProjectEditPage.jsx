@@ -56,6 +56,10 @@ function ProjectEditPage() {
       });
 
       if (!response.ok) {
+        if (response.status == 400) { //400 means a bad status was put in.
+          alert("ERROR: Status 400.\nPlease make sure the manager's user id is valid!");
+          return;
+        }
         throw new Error(`Failed to update: HTTP status ${response.status}`);
       }
 

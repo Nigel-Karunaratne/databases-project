@@ -34,6 +34,33 @@ function UserTable() {
     fetchData();
   }, []); // Empty dependency array ensures this runs only once
 
+  const handleDelete = async (userId, userName) => {
+    // 1. Confirmation Step
+    if (!window.confirm(`Are you sure you want to delete user: ${userName} (ID: ${userId})?`)) {
+      return; // Stop if the user cancels
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/${userId}`, {
+        method: 'DELETE', // 2. Specify the DELETE method
+      });
+
+      if (response.status === 204 || response.ok) { 
+        console.log(`User ${userId} deleted successfully.`);
+        // Optional: Show a success message to the user (e.g., a Bootstrap Toast)
+
+        window.location.reload();
+      } else {
+        // Handle API errors (e.g., if the user doesn't exist)
+        throw new Error(`Failed to delete user: HTTP status ${response.status}`);
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(`Deletion failed: ${err.message}`);
+    }
+
+  };
+
   /* --- RENDERING --- */
 
   if (loading) {
@@ -89,7 +116,7 @@ function UserTable() {
               <td>
                 {/* <button className="btn btn-sm btn-info me-2">Edit</button> */}
                 <Link to={`/users/edit/${data.userID}`} className="btn btn-sm btn-info me-2">Edit</Link>
-                <button className="btn btn-sm btn-danger">Delete</button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(data.userID, data.firstName)}>Delete</button>
               </td>
             </tr>
           ))}
