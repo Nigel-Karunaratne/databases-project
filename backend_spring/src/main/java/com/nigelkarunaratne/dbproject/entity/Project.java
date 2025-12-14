@@ -23,7 +23,7 @@ public class Project {
 
     // for manager
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_uid", referencedColumnName = "user_id", nullable = true)
+    @JoinColumn(name = "manager_uid", referencedColumnName = "user_id", nullable = false)
     @JsonBackReference
     private Manager manager;
 
@@ -77,5 +77,13 @@ public class Project {
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
     }
+
+    //
+    public Integer getManagerUserID() {
+        if (this.manager != null) {
+            return this.manager.getUserID(); 
+        }
+    return null;
+}
 
 }

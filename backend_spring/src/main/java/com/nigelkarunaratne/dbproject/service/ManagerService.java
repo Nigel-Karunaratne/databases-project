@@ -24,13 +24,13 @@ public class ManagerService {
         return managerRepository.findAll();
     }
 
-    public Optional<Manager> findManagerById(Long userId) {
+    public Optional<Manager> findManagerById(Integer userId) {
         return managerRepository.findById(userId);
     }
 
     //transaction - needs to check if user exists
     @Transactional
-    public Optional<Manager> createManagerProfile(Long userId, Manager managerDetails) {
+    public Optional<Manager> createManagerProfile(Integer userId, Manager managerDetails) {
         Optional<User> userOptional = userService.findUserById(userId);
 
         if (userOptional.isPresent()) {
@@ -48,7 +48,24 @@ public class ManagerService {
         return Optional.empty();
     }
 
-    public boolean deleteManagerProfile(Long userId) {
+    @Transactional
+    public Optional<Manager> updateManagerProfile(Integer userId, Manager managerDetails) {
+        
+        // 1. Find the existing Manager record by user_id
+        return managerRepository.findById(userId).map(existingManager -> {
+            
+            // 2. Update ONLY the fields specific to the Manager table
+            existingManager.setExpertiseArea(managerDetails.getExpertiseArea());
+            existingManager.setExperienceYears(managerDetails.getExperienceYears());
+            
+            // 3. Save the updated entity
+            return managerRepository.save(existingManager);
+        });
+        // If findById(userId) returns Optional.empty(), the map function is skipped
+        // and Optional.empty() is returned from the service.
+    }
+
+    public boolean deleteManagerProfile(Integer userId) {
         if (managerRepository.existsById(userId)) {
             managerRepository.deleteById(userId);
             return true;

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +30,7 @@ public class ProjectController {
 
     // GET /api/projects/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<Project> getProjectById(@PathVariable Integer id) {
         return projectService.findProjectById(id)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
@@ -38,26 +39,95 @@ public class ProjectController {
     // POST /api/projects
     // Takes json body (same format as produced by GET)
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam(required = false) Long managerId) {
-        // If a managerId is provided, try to assign it
-        if (managerId != null) {
-            Optional<Project> createdProject = projectService.createProject(project, managerId);
-            if (createdProject.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdProject.get());
-            } else {
-                // If managerId was provided but not found
-                return ResponseEntity.badRequest().body(null); 
+    public ResponseEntity<Project> createProject(@RequestBody Map<String, Object> creationRequest) {
+        System.out.println("WE GOT A CREATION REQUEST");
+        // 1. Extract required project_name
+        String projectName = (String) creationRequest.get("projectName");
+        
+        // 2. Extract required managerId and convert it safely to Long
+        Integer managerId = null;
+        Object managerIdObj = creationRequest.get("managerUserID");
+
+        
+        if (managerIdObj instanceof Number) {
+            managerId = ((Number) managerIdObj).intValue();
+        } else if (managerIdObj instanceof String) {
+            try {
+                managerId = Integer.valueOf((String) managerIdObj);
+            } catch (NumberFormatException ignored) { }
+        }
+        System.out.println("  manager id is " + managerId);
+
+        // Basic validation: name must exist, and managerId is now required (not null)
+        if (projectName == null || managerId == null) {
+             return ResponseEntity.badRequest().body(null);
+        }
+
+        // Create a new Project entity with the extracted name
+        Project project = new Project();
+        project.setProjectName(projectName);
+
+        // Call the service layer with the entity and the ID
+        Optional<Project> createdProject = projectService.createProject(project, managerId);
+        
+        if (createdProject.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProject.get());
+        } else {
+            // Returns 400 Bad Request if managerId was invalid
+            return ResponseEntity.badRequest().body(null); 
+        }
+    }
+
+    //PUT MAPPING
+    @PutMapping("/{projectId}")
+    public ResponseEntity<Project> updateProject(
+            @PathVariable Integer projectId,
+            @RequestBody Map<String, Object> updateRequest) {
+        
+        // 1. Extract and validate required fields
+        String newProjectName = (String) updateRequest.get("projectName");
+        Integer managerId = null;
+        Object managerIdObj = updateRequest.get("managerUserID");
+        
+        if (newProjectName == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // Safe conversion to Long (handles null, Integer, String)
+        if (managerIdObj != null) {
+            if (managerIdObj instanceof Number) {
+                managerId = ((Number) managerIdObj).intValue();
+            } else if (managerIdObj instanceof String) {
+                try {
+                    managerId = Integer.valueOf((String) managerIdObj);
+                } catch (NumberFormatException ignored) { /* Handled below */ }
             }
         }
         
-        // If no managerId is provided (or manager not found) but project creation is allowed
-        Project newProject = projectService.saveProject(project);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newProject);
+        // CRITICAL CHECK: managerId must be non-null and convertible
+        if (managerId == null) { 
+             // This covers the case where the client sent "managerUserID": null
+             return ResponseEntity.badRequest().body(null);
+        }
+
+        // 2. Construct the Project entity (only needs the name)
+        Project projectDetails = new Project();
+        projectDetails.setProjectName(newProjectName); 
+
+        try {
+            // CALL: Long projectId, Project projectDetails, Long managerId
+             return projectService.updateProject(projectId, projectDetails, managerId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            // Catches invalid manager ID (non-existent in database)
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     // DELETE /api/projects/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProject(@PathVariable Integer id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }

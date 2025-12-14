@@ -11,8 +11,9 @@ public class Task {
     @Id
     @Column(name = "task_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer taskID;
+    private Integer taskID; // Primary Key
 
+    // Core Fields
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -22,32 +23,35 @@ public class Task {
     @Column(name = "priority_lvl", nullable = false)
     private Integer priority;
 
-    @Column(name = "due_date", nullable = true)
+    @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
-    // foreign key for projects
+    // Foreign Key for Projects (Many-to-One)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     @JsonBackReference("project-tasks")
     private Project project;
 
-    // foreign key for user
+    // Foreign Key for User (Many-to-One)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("user-tasks")
     private User user;
+
+    // --- Helper Getters for JSON Output (To expose IDs) ---
+
+    public Integer getProjectID() {
+        return (this.project != null) ? this.project.getProjectID() : null;
+    }
+
+    public Integer getAssignedUserID() {
+        return (this.user != null) ? this.user.getUserID() : null;
+    }
 
     public Task() {
     }
 
-    public Task(String title, String description, Integer priority, LocalDate dueDate) {
-        this.title = title;
-        this.description = description;
-        this.priority = priority;
-        this.dueDate = dueDate;
-    }
-
-    // GETTER/SETTER //
+    // GETTER / SETTTER //
 
     public Integer getTaskID() {
         return taskID;
@@ -104,13 +108,4 @@ public class Task {
     public void setUser(User user) {
         this.user = user;
     }
-
-    //so that the user id is returned instead of the whole user object
-    public Integer getAssignedUserID() {
-    if (this.user != null) {
-        return this.user.getUserID(); 
-    }
-    return null;
-}
-
 }

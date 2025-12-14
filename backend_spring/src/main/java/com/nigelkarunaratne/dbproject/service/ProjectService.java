@@ -4,6 +4,8 @@ import com.nigelkarunaratne.dbproject.entity.Project;
 import com.nigelkarunaratne.dbproject.entity.Manager;
 import com.nigelkarunaratne.dbproject.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +24,7 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    public Optional<Project> findProjectById(Long id) {
+    public Optional<Project> findProjectById(Integer id) {
         return projectRepository.findById(id);
     }
 
@@ -31,23 +33,51 @@ public class ProjectService {
     }
 
     // Method to create/update a project and assign a manager
-    public Optional<Project> createProject(Project project, Long managerId) {
+    public Optional<Project> createProject(Project project, Integer managerId) {
+        // ENFORCEMENT: Manager ID is now required
+        if (managerId == null) {
+            return Optional.empty(); // Cannot create without a manager
+        }
+        
         Optional<Manager> managerOptional = managerService.findManagerById(managerId);
 
         if (managerOptional.isPresent()) {
-            Manager manager = managerOptional.get();
-            project.setManager(manager);
+            project.setManager(managerOptional.get());
             return Optional.of(projectRepository.save(project));
         } else {
-            // Can choose to save the project without a manager (as the FK is nullable)
-            // For now, we only create if the manager exists.
             return Optional.empty(); // Manager not found
-
-            // return Optional.of(projectRepository.save(project));
         }
     }
 
-    public void deleteProject(Long id) {
+    public void deleteProject(Integer id) {
         projectRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Optional<Project> updateProject(Integer projectId, Project projectDetails, Integer managerId) {
+        
+        return projectRepository.findById(projectId).map(existingProject -> {
+            
+            existingProject.setProjectName(projectDetails.getProjectName());
+            
+            // 2. Handle Manager reassignment
+            if (managerId != null) {
+                // If a new manager ID is provided, try to assign it
+                Optional<Manager> managerOptional = managerService.findManagerById(managerId);
+                
+                if (managerOptional.isPresent()) {
+                    existingProject.setManager(managerOptional.get());
+                } else {
+                    // CRITICAL ENFORCEMENT: Manager ID was provided but invalid. 
+                    // Since the manager is NOT NULL, we should return an error or retain the existing manager.
+                    // Returning empty indicates a failure to update due to bad input.
+                    throw new IllegalArgumentException("Cannot update project: Invalid Manager ID provided.");
+                }
+            } 
+            // If managerId is null, we DO NOTHING, ensuring the existing manager is retained.
+            // We cannot set the manager to null.
+            
+            return projectRepository.save(existingProject);
+        });
     }
 }

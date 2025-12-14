@@ -5,6 +5,8 @@ import com.nigelkarunaratne.dbproject.entity.Project;
 import com.nigelkarunaratne.dbproject.entity.User;
 import com.nigelkarunaratne.dbproject.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,8 +14,9 @@ import java.util.Optional;
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private final ProjectService projectService;
-    private final UserService userService;
+    // Assuming Project and User services exist and use Integer for findById
+    private final ProjectService projectService; 
+    private final UserService userService; 
 
     public TaskService(TaskRepository taskRepository, ProjectService projectService, UserService userService) {
         this.taskRepository = taskRepository;
@@ -21,53 +24,73 @@ public class TaskService {
         this.userService = userService;
     }
 
+    // --- READ OPERATIONS ---
+
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
     }
 
-    public Optional<Task> findTaskById(Long id) {
+    public Optional<Task> findTaskById(Integer id) {
         return taskRepository.findById(id);
     }
 
-    // Method to create a task, linking it to Project (required) and User (optional)
-    public Optional<Task> createTask(Task task, Long projectId, Long userId) {
-        Optional<Project> projectOptional = projectService.findProjectById(projectId);
+    // --- CREATE OPERATION ---
 
-        if (projectOptional.isEmpty()) {
-            return Optional.empty(); // Project not found, cannot create task
-        }
-
-        task.setProject(projectOptional.get());
-
-        if (userId != null) {
-            Optional<User> userOptional = userService.findUserById(userId);
-            // If the user exists, set them as the assignee; otherwise, assignee remains null.
-            userOptional.ifPresent(task::setUser);
-        }
+    @Transactional
+    public Optional<Task> createTask(Task taskDetails, Integer newProjectID, Integer newAssignedUserID) {
         
-        return Optional.of(taskRepository.save(task));
+        // 1. Validate Project (Required/NOT NULL)
+        Optional<Project> projectOptional = projectService.findProjectById(newProjectID);
+        if (projectOptional.isEmpty()) {
+            throw new IllegalArgumentException("Project ID is invalid.");
+        }
+        taskDetails.setProject(projectOptional.get());
+
+        // 2. Validate User (Required/NOT NULL)
+        Optional<User> userOptional = userService.findUserById(newAssignedUserID);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("User ID is invalid.");
+        }
+        taskDetails.setUser(userOptional.get());
+        
+        // 3. Save
+        return Optional.of(taskRepository.save(taskDetails));
     }
 
-    public Optional<Task> updateTask(Long id, Task taskDetails) {
-        return taskRepository.findById(id).map(existingTask -> {
-            // Update core task properties
+    // --- UPDATE OPERATION ---
+
+    @Transactional
+    public Optional<Task> updateTask(Integer taskId, Task taskDetails, Integer newProjectID, Integer newAssignedUserID) {
+        
+        return taskRepository.findById(taskId).map(existingTask -> {
+            
+            // 1. Update Core Attributes
             existingTask.setTitle(taskDetails.getTitle());
             existingTask.setDescription(taskDetails.getDescription());
             existingTask.setPriority(taskDetails.getPriority());
             existingTask.setDueDate(taskDetails.getDueDate());
-            
-            // Note: Relationship updates (e.g., changing project/assignee) would require 
-            // separate logic checking for new IDs, but basic property updates are handled here.
 
+            // 2. Validate and Update Assigned Project
+            Optional<Project> projectOptional = projectService.findProjectById(newProjectID);
+            if (projectOptional.isEmpty()) {
+                throw new IllegalArgumentException("Invalid Project ID provided for update.");
+            }
+            existingTask.setProject(projectOptional.get());
+
+            // 3. Validate and Update Assigned User
+            Optional<User> userOptional = userService.findUserById(newAssignedUserID);
+            if (userOptional.isEmpty()) {
+                throw new IllegalArgumentException("Invalid User ID provided for task assignment.");
+            }
+            existingTask.setUser(userOptional.get());
+            
             return taskRepository.save(existingTask);
         });
     }
 
-    public boolean deleteTask(Long id) {
-        if (taskRepository.existsById(id)) {
-            taskRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    // --- DELETE OPERATION ---
+
+    public void deleteTask(Integer id) {
+        taskRepository.deleteById(id);
     }
 }

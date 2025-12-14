@@ -25,7 +25,7 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "addr", nullable = true)
+    @Column(name = "addr", nullable = false)
     private String addr;
 
     // For Manager using foreign key

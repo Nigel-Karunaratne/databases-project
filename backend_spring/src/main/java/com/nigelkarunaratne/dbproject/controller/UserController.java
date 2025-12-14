@@ -28,7 +28,7 @@ public class UserController {
 
     // GET /api/users/{id} (OPERATION: Read)
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return userService.findUserById(id)
             .map(ResponseEntity::ok) // If found, return 200 OK with the User object
             .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return 404 Not Found
@@ -43,15 +43,15 @@ public class UserController {
 
     // PUT /api/users/{id} (OPERATION: Update)
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User userDetails) {
         return userService.updateUser(id, userDetails)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
-    
+
     // DELETE /api/users/{id} (OPERATION: Delete)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         boolean deleted = userService.deleteUser(id);
         if (deleted) {
             return ResponseEntity.noContent().build(); // 204 No Content (Successful deletion)

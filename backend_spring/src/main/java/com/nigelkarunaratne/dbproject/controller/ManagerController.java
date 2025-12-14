@@ -4,6 +4,7 @@ import com.nigelkarunaratne.dbproject.entity.Manager;
 import com.nigelkarunaratne.dbproject.service.ManagerService;
 
 import org.springframework.http.HttpStatus;
+// import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -28,7 +29,7 @@ public class ManagerController {
 
     // GET /api/managers/{userId}
     @GetMapping("/{userId}")
-    public ResponseEntity<Manager> getManagerById(@PathVariable Long userId) {
+    public ResponseEntity<Manager> getManagerById(@PathVariable Integer userId) {
         return managerService.findManagerById(userId)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
@@ -37,7 +38,7 @@ public class ManagerController {
     // POST /api/managers/{userId}
     // Use the user's ID in the path to create their profile
     @PostMapping("/{userId}")
-    public ResponseEntity<Manager> createManagerProfile(@PathVariable Long userId, @RequestBody Manager managerDetails) {
+    public ResponseEntity<Manager> createManagerProfile(@PathVariable Integer userId, @RequestBody Manager managerDetails) {
         Optional<Manager> createdManager = managerService.createManagerProfile(userId, managerDetails);
         
         if (createdManager.isPresent()) {
@@ -50,7 +51,7 @@ public class ManagerController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Manager> updateManagerProfile(@PathVariable Long userId, @RequestBody Manager managerDetails) {
+    public ResponseEntity<Manager> updateManagerProfile(@PathVariable Integer userId, @RequestBody Manager managerDetails) {
         return managerService.updateManagerProfile(userId, managerDetails)
             .map(ResponseEntity::ok) // Returns 200 OK with the updated Manager body
             .orElseGet(() -> ResponseEntity.notFound().build()); // Returns 404 Not Found if the ID doesn't exist
@@ -58,7 +59,7 @@ public class ManagerController {
 
     // DELETE /api/managers/{userId}
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteManagerProfile(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteManagerProfile(@PathVariable Integer userId) {
         if (managerService.deleteManagerProfile(userId)) {
             return ResponseEntity.noContent().build(); // 204 No Content
         } else {
