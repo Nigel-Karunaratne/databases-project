@@ -13,7 +13,7 @@ import java.util.Optional;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final ManagerService managerService; // To find the associated Manager
+    private final ManagerService managerService; // For finding the associated Manager
 
     public ProjectService(ProjectRepository projectRepository, ManagerService managerService) {
         this.projectRepository = projectRepository;
@@ -32,11 +32,10 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    // Method to create/update a project and assign a manager
     public Optional<Project> createProject(Project project, Integer managerId) {
-        // ENFORCEMENT: Manager ID is now required
+        // requires manager id now
         if (managerId == null) {
-            return Optional.empty(); // Cannot create without a manager
+            return Optional.empty();
         }
         
         Optional<Manager> managerOptional = managerService.findManagerById(managerId);
@@ -60,7 +59,7 @@ public class ProjectService {
             
             existingProject.setProjectName(projectDetails.getProjectName());
             
-            // 2. Handle Manager reassignment
+            // manager reassignment
             if (managerId != null) {
                 // If a new manager ID is provided, try to assign it
                 Optional<Manager> managerOptional = managerService.findManagerById(managerId);
@@ -68,15 +67,12 @@ public class ProjectService {
                 if (managerOptional.isPresent()) {
                     existingProject.setManager(managerOptional.get());
                 } else {
-                    // CRITICAL ENFORCEMENT: Manager ID was provided but invalid. 
-                    // Since the manager is NOT NULL, we should return an error or retain the existing manager.
-                    // Returning empty indicates a failure to update due to bad input.
+                    // Manager ID was provided but invalid. 
+                    // do not return empty (implies updsate failed due to improper input)
                     throw new IllegalArgumentException("Cannot update project: Invalid Manager ID provided.");
                 }
             } 
-            // If managerId is null, we DO NOTHING, ensuring the existing manager is retained.
-            // We cannot set the manager to null.
-            
+            // If managerId is null, we DO NOTHING, so existing manager is kept.            
             return projectRepository.save(existingProject);
         });
     }

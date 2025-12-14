@@ -12,7 +12,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    // Constructor Injection: Spring automatically provides the UserRepository implementation
+    // spring provides repository implementation
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -26,7 +26,6 @@ public class UserService {
     }
 
     public User saveUser(User user) {
-        // You might add validation or complex logic here before saving
         return userRepository.save(user);
     }
 

@@ -24,8 +24,7 @@ public class TaskService {
         this.userService = userService;
     }
 
-    // --- READ OPERATIONS ---
-
+    // READ ops
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
     }
@@ -35,54 +34,50 @@ public class TaskService {
     }
 
     public List<Task> findTasksByUserId(Integer userId) {
-        // Use the custom finder method from the repository
-        return taskRepository.findByUserUserID(userId);
+        return taskRepository.findByUserUserID(userId); //use custom method
     }
 
-    // --- CREATE OPERATION ---
-
+    // CREATE ops
     @Transactional
     public Optional<Task> createTask(Task taskDetails, Integer newProjectID, Integer newAssignedUserID) {
         
-        // 1. Validate Project (Required/NOT NULL)
+        // validate project (no null)
         Optional<Project> projectOptional = projectService.findProjectById(newProjectID);
         if (projectOptional.isEmpty()) {
             throw new IllegalArgumentException("Project ID is invalid.");
         }
         taskDetails.setProject(projectOptional.get());
 
-        // 2. Validate User (Required/NOT NULL)
+        // same for user
         Optional<User> userOptional = userService.findUserById(newAssignedUserID);
         if (userOptional.isEmpty()) {
             throw new IllegalArgumentException("User ID is invalid.");
         }
         taskDetails.setUser(userOptional.get());
         
-        // 3. Save
         return Optional.of(taskRepository.save(taskDetails));
     }
 
-    // --- UPDATE OPERATION ---
-
+    // UPDATE ops
     @Transactional
     public Optional<Task> updateTask(Integer taskId, Task taskDetails, Integer newProjectID, Integer newAssignedUserID) {
         
         return taskRepository.findById(taskId).map(existingTask -> {
             
-            // 1. Update Core Attributes
+            // Update attrs
             existingTask.setTitle(taskDetails.getTitle());
             existingTask.setDescription(taskDetails.getDescription());
             existingTask.setPriority(taskDetails.getPriority());
             existingTask.setDueDate(taskDetails.getDueDate());
 
-            // 2. Validate and Update Assigned Project
+            // Validate/Update Project
             Optional<Project> projectOptional = projectService.findProjectById(newProjectID);
             if (projectOptional.isEmpty()) {
                 throw new IllegalArgumentException("Invalid Project ID provided for update.");
             }
             existingTask.setProject(projectOptional.get());
 
-            // 3. Validate and Update Assigned User
+            // Validate/update user
             Optional<User> userOptional = userService.findUserById(newAssignedUserID);
             if (userOptional.isEmpty()) {
                 throw new IllegalArgumentException("Invalid User ID provided for task assignment.");
@@ -93,8 +88,7 @@ public class TaskService {
         });
     }
 
-    // --- DELETE OPERATION ---
-
+    // DELETE ops
     public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
     }

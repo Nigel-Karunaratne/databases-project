@@ -56,12 +56,11 @@ public class Manager {
         return user;
     }
 
-    // When setting the User, we also link the IDs
     public void setUser(User user) {
         this.user = user;
         // if (user != null) {
         //     this.userID = user.getUserID();
-        // }
+        // } //don't link ids here
     }
 
     public String getExpertiseArea() {

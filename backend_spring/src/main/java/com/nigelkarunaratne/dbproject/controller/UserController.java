@@ -10,12 +10,11 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/api/users") // Base URL for all endpoints in this controller
+@RequestMapping("/api/users") // Base URL for all endpoints for users
 public class UserController {
 
     private final UserService userService;
 
-    // Constructor Injection
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -54,7 +53,7 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         boolean deleted = userService.deleteUser(id);
         if (deleted) {
-            return ResponseEntity.noContent().build(); // 204 No Content (Successful deletion)
+            return ResponseEntity.noContent().build(); // 204 No Content (deletion successful)
         } else {
             return ResponseEntity.notFound().build(); // 404 Not Found (User not found)
         }

@@ -20,10 +20,10 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    // --- Helper Method to Extract and Validate Fields (Used by POST and PUT) ---
+    // --- HELPER Method --> Extract and Validate Fields from a client object
     private ResponseEntity<Task> processTaskRequest(Map<String, Object> request, Integer taskId) {
         
-        // 1. EXTRACT AND CONVERT ALL REQUIRED FIELDS
+        // EXTRACT AND CONVERT ALL REQUIRED FIELDS
         String title = (String) request.get("title");
         String description = (String) request.get("description");
         
@@ -45,13 +45,13 @@ public class TaskController {
         Object projectIdObj = request.get("projectID");
         if (projectIdObj instanceof Number) { newProjectID = ((Number) projectIdObj).intValue(); } 
 
-        // 2. VALIDATION (All fields are required)
+        // ALL FIELDS ARE REQUIRED
         if (title == null || description == null || priority == null || dueDate == null || 
             newAssignedUserID == null || newProjectID == null) {
             return ResponseEntity.badRequest().body(null); 
         }
 
-        // 3. CONSTRUCT THE TASK ENTITY
+        // MAKE TASK MODEL
         Task taskDetails = new Task();
         if (taskId != null) { taskDetails.setTaskID(taskId); } // Set ID for POST/PUT consistency
         taskDetails.setTitle(title);
@@ -60,29 +60,30 @@ public class TaskController {
         taskDetails.setDueDate(dueDate);
 
         try {
-            // 4. CALL THE SERVICE
-            if (taskId == null) { // POST (Create)
+            // CALL THE SERVICE
+            // if not given a task id, POST (create). If not, this is PUT (update)
+            if (taskId == null) {
                 return taskService.createTask(taskDetails, newProjectID, newAssignedUserID)
                     .map(task -> ResponseEntity.status(HttpStatus.CREATED).body(task))
                     .orElseGet(() -> ResponseEntity.badRequest().body(null));
-            } else { // PUT (Update)
+            } else {
                 return taskService.updateTask(taskId, taskDetails, newProjectID, newAssignedUserID)
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
             }
         } catch (IllegalArgumentException e) {
-            // Catches invalid IDs (non-existent Project or User) from the service layer
+            // Catches invalid IDs (non-existent Project or User) from service
             return ResponseEntity.badRequest().body(null);
         }
     }
     
-    // --- GET OPERATIONS ---
-
+    // GET /api/tasks
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(taskService.findAllTasks());
     }
 
+    // GET /api/tasks/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Integer id) {
         return taskService.findTaskById(id)
@@ -90,6 +91,7 @@ public class TaskController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // GET /api/tasks/user/{id} -- for getting all user tasks by id
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Task>> getTasksByUserId(@PathVariable Integer userId) {
         
@@ -100,20 +102,18 @@ public class TaskController {
             return ResponseEntity.notFound().build();
         }
         
-        // Return 200 OK with the list of tasks
+        // Return 200 OK + list of tasks
         return ResponseEntity.ok(tasks);
     }
     
-    // --- POST OPERATION ---
-
+    // POST /api/tasks
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Map<String, Object> creationRequest) {
         // taskId is null for creation
         return processTaskRequest(creationRequest, null); 
     }
 
-    // --- PUT OPERATION ---
-
+    // PUT /api/tasks/{id}
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(
             @PathVariable Integer id,
@@ -122,8 +122,7 @@ public class TaskController {
         return processTaskRequest(updateRequest, id);
     }
 
-    // --- DELETE OPERATION ---
-
+    // DELETE /api/tasks/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
         if (taskService.findTaskById(id).isPresent()) {

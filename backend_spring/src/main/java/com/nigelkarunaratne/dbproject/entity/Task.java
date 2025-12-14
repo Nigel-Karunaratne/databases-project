@@ -11,9 +11,8 @@ public class Task {
     @Id
     @Column(name = "task_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer taskID; // Primary Key
+    private Integer taskID; // Pk
 
-    // Core Fields
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -26,19 +25,19 @@ public class Task {
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
-    // Foreign Key for Projects (Many-to-One)
+    // Foreign Key for Projects
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     @JsonBackReference("project-tasks")
     private Project project;
 
-    // Foreign Key for User (Many-to-One)
+    // Foreign Key for User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("user-tasks")
     private User user;
 
-    // --- Helper Getters for JSON Output (To expose IDs) ---
+    //Getters needed for JSON creation
 
     public Integer getProjectID() {
         return (this.project != null) ? this.project.getProjectID() : null;
@@ -51,7 +50,7 @@ public class Task {
     public Task() {
     }
 
-    // GETTER / SETTTER //
+    // GETTERS -- SETTTERS //
 
     public Integer getTaskID() {
         return taskID;

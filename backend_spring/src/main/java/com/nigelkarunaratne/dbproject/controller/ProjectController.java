@@ -37,18 +37,15 @@ public class ProjectController {
     }
 
     // POST /api/projects
-    // Takes json body (same format as produced by GET)
+    // Takes json body (same format as produced by GET). uses map, must manually map object
     @PostMapping
     public ResponseEntity<Project> createProject(@RequestBody Map<String, Object> creationRequest) {
         System.out.println("WE GOT A CREATION REQUEST");
-        // 1. Extract required project_name
+        // extract project_name and iD
         String projectName = (String) creationRequest.get("projectName");
-        
-        // 2. Extract required managerId and convert it safely to Long
         Integer managerId = null;
         Object managerIdObj = creationRequest.get("managerUserID");
 
-        
         if (managerIdObj instanceof Number) {
             managerId = ((Number) managerIdObj).intValue();
         } else if (managerIdObj instanceof String) {
@@ -56,18 +53,17 @@ public class ProjectController {
                 managerId = Integer.valueOf((String) managerIdObj);
             } catch (NumberFormatException ignored) { }
         }
-        System.out.println("  manager id is " + managerId);
 
-        // Basic validation: name must exist, and managerId is now required (not null)
+        // validation
         if (projectName == null || managerId == null) {
              return ResponseEntity.badRequest().body(null);
         }
 
-        // Create a new Project entity with the extracted name
+        // create a new Project model
         Project project = new Project();
         project.setProjectName(projectName);
 
-        // Call the service layer with the entity and the ID
+        // Call service layer
         Optional<Project> createdProject = projectService.createProject(project, managerId);
         
         if (createdProject.isPresent()) {
@@ -84,7 +80,7 @@ public class ProjectController {
             @PathVariable Integer projectId,
             @RequestBody Map<String, Object> updateRequest) {
         
-        // 1. Extract and validate required fields
+        // similar style to post mapping
         String newProjectName = (String) updateRequest.get("projectName");
         Integer managerId = null;
         Object managerIdObj = updateRequest.get("managerUserID");
@@ -93,7 +89,7 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(null);
         }
 
-        // Safe conversion to Long (handles null, Integer, String)
+        // safe conversion to int
         if (managerIdObj != null) {
             if (managerIdObj instanceof Number) {
                 managerId = ((Number) managerIdObj).intValue();
@@ -104,19 +100,17 @@ public class ProjectController {
             }
         }
         
-        // CRITICAL CHECK: managerId must be non-null and convertible
+        // managerId must be non-null and convertible (if client sent "managerUserID": null)
         if (managerId == null) { 
-             // This covers the case where the client sent "managerUserID": null
-             return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(null);
         }
 
-        // 2. Construct the Project entity (only needs the name)
+        // create project model (only needs the name)
         Project projectDetails = new Project();
         projectDetails.setProjectName(newProjectName); 
 
         try {
-            // CALL: Long projectId, Project projectDetails, Long managerId
-             return projectService.updateProject(projectId, projectDetails, managerId)
+            return projectService.updateProject(projectId, projectDetails, managerId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
